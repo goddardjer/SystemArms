@@ -4,6 +4,7 @@ import sys
 sys.path.append('/home/pi/ArmPi/')
 import cv2
 import time
+import numpy as np
 from Camera import CameraClass
 import threading
 from LABConfig import *
