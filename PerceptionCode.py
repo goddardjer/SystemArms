@@ -23,7 +23,7 @@ class ColorTracker:
             'white': (255, 255, 255),
         }
         self.target_color = ('red',)
-        self.camera = Camera()
+        self.camera = Camera.Camera()
         self.camera.camera_open()
 
     def set_target_color(self, target_color):
