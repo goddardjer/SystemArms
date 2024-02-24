@@ -53,6 +53,7 @@ def getAreaMaxContour(contours):
                 area_max_contour = c
 
     # Return the largest contour
+    return area_max_contour, contour_area_max
 
 # The angle at which the gripper closes when gripping
 servo1 = 500
