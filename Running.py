@@ -10,6 +10,7 @@ import Functions.RemoteControl as RemoteControl
 import Functions.ColorTracking as ColorTracking
 import Functions.ColorPalletizing as ColorPalletizing
 
+
 RunningFunc = 0
 LastHeartbeat = 0
 cam = None
