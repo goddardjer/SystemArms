@@ -4,7 +4,7 @@ import sys
 sys.path.append('/home/pi/ArmPi/')
 import cv2
 import time
-import Camera
+from Camera import CameraClass
 import threading
 from LABConfig import *
 from ArmIK.Transform import *
@@ -22,7 +22,7 @@ class ColorTracker:
             'white': (255, 255, 255),
         }
         self.target_color = ('red',)
-        self.camera = Camera()
+        self.camera = CameraClass()
         self.camera.camera_open()
 
     def set_target_color(self, target_color):
