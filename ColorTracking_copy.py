@@ -141,7 +141,7 @@ def start():
 
 # Called when the app stops playing
 def stop():
-    global _stop 
+    global _stop
     global __isRunning
     _stop = True
     __isRunning = False
