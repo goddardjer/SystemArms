@@ -42,7 +42,7 @@ class ColorTracker:
         frame_gb = self.resize_and_blur(img)
         frame_lab = self.convert_to_lab(frame_gb)
         for color in self.target_color:
-            frame_mask = cv2.inRange(frame_lab, self.range_rgb[color][0], self.range_rgb[color][1])
+            frame_mask = cv2.inRange(frame_lab, self.range_rgb[color])
             opened = cv2.morphologyEx(frame_mask, cv2.MORPH_OPEN, np.ones((6, 6), np.uint8))
             closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, np.ones((6, 6), np.uint8))
             contours = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2]
