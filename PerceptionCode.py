@@ -5,13 +5,13 @@ sys.path.append('/home/pi/ArmPi/')
 import cv2
 import time
 import numpy as np
-from Camera import CameraClass
-import threading
+import Camera
 from LABConfig import *
 from ArmIK.Transform import *
 from ArmIK.ArmMoveIK import *
 import HiwonderSDK.Board as Board
 from CameraCalibration.CalibrationConfig import *
+
 
 class ColorTracker:
     def __init__(self):
@@ -23,7 +23,7 @@ class ColorTracker:
             'white': (255, 255, 255),
         }
         self.target_color = ('red',)
-        self.camera = CameraClass()
+        self.camera = Camera()
         self.camera.camera_open()
 
     def set_target_color(self, target_color):
