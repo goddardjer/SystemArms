@@ -83,7 +83,7 @@ def main():
     tracker = ColorTracker()
 
     # Set the target color
-    tracker.set_target_color('blue')
+    tracker.set_target_color('blue',)
 
     # Run the color tracking
     tracker.run()
