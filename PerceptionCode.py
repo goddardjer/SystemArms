@@ -30,30 +30,35 @@ class ColorDetector:
 
         return area_max_contour, contour_area_max
 
+    def process_frame(self, frame):
+        frame_resize = cv2.resize(frame, (640, 480), interpolation=cv2.INTER_NEAREST)
+        frame_gb = cv2.GaussianBlur(frame_resize, (11, 11), 11)
+        frame_lab = cv2.cvtColor(frame_gb, cv2.COLOR_BGR2LAB)
+        return frame_lab
+
+    def draw_contours(self, frame, frame_lab, color):
+        frame_mask = cv2.inRange(frame_lab, color_range[color][0], color_range[color][1])
+        opened = cv2.morphologyEx(frame_mask, cv2.MORPH_OPEN, np.ones((6, 6), np.uint8))
+        closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, np.ones((6, 6), np.uint8))
+        contours = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2]
+        areaMaxContour, area_max = self.getAreaMaxContour(contours)
+
+        if area_max > 2500:
+            rect = cv2.minAreaRect(areaMaxContour)
+            box = np.int0(cv2.boxPoints(rect))
+            cv2.drawContours(frame, [box], -1, (0, 255, 0), 2)
+            cv2.putText(frame, color, (box[0][0], box[0][1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+
     def run(self):
         while True:
             img = self.camera.frame
             if img is not None:
                 frame = img.copy()
-                img_h, img_w = frame.shape[:2]
-
-                frame_resize = cv2.resize(frame, (640, 480), interpolation=cv2.INTER_NEAREST)
-                frame_gb = cv2.GaussianBlur(frame_resize, (11, 11), 11)
-                frame_lab = cv2.cvtColor(frame_gb, cv2.COLOR_BGR2LAB)
+                frame_lab = self.process_frame(frame)
 
                 for color in self.target_colors:
                     if color in color_range:
-                        frame_mask = cv2.inRange(frame_lab, color_range[color][0], color_range[color][1])
-                        opened = cv2.morphologyEx(frame_mask, cv2.MORPH_OPEN, np.ones((6, 6), np.uint8))
-                        closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, np.ones((6, 6), np.uint8))
-                        contours = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2]
-                        areaMaxContour, area_max = self.getAreaMaxContour(contours)
-
-                        if area_max > 2500:
-                            rect = cv2.minAreaRect(areaMaxContour)
-                            box = np.int0(cv2.boxPoints(rect))
-                            cv2.drawContours(frame, [box], -1, (0, 255, 0), 2)
-                            cv2.putText(frame, color, (box[0][0], box[0][1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+                        self.draw_contours(frame, frame_lab, color)
 
                 cv2.imshow('Frame', frame)
                 key = cv2.waitKey(1)
