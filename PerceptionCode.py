@@ -40,7 +40,6 @@ class ColorTracker:
             if not ret:
                 break
             frame = self.resize_and_blur(frame)
-            frame = self.convert_to_lab(frame)
             for color in self.color_range:
                 contours = self.get_contours(frame, color)
                 frame = self.draw_bounding_box(frame, contours, color)
