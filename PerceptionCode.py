@@ -11,8 +11,8 @@ import HiwonderSDK.Board as Board
 from CameraCalibration.CalibrationConfig import *
 
 class ColorDetector:
-    def __init__(self, target_color=('red',)):
-        self.target_color = target_color
+    def __init__(self, target_colors=('red', 'green', 'blue')):
+        self.target_colors = target_colors
         self.camera = Camera.Camera()
         self.camera.camera_open()
 
@@ -41,10 +41,7 @@ class ColorDetector:
                 frame_gb = cv2.GaussianBlur(frame_resize, (11, 11), 11)
                 frame_lab = cv2.cvtColor(frame_gb, cv2.COLOR_BGR2LAB)
 
-                area_max = 0
-                areaMaxContour = 0
-
-                for color in self.target_color:
+                for color in self.target_colors:
                     if color in color_range:
                         frame_mask = cv2.inRange(frame_lab, color_range[color][0], color_range[color][1])
                         opened = cv2.morphologyEx(frame_mask, cv2.MORPH_OPEN, np.ones((6, 6), np.uint8))
@@ -52,10 +49,11 @@ class ColorDetector:
                         contours = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2]
                         areaMaxContour, area_max = self.getAreaMaxContour(contours)
 
-                if area_max > 2500:
-                    rect = cv2.minAreaRect(areaMaxContour)
-                    box = np.int0(cv2.boxPoints(rect))
-                    cv2.drawContours(frame, [box], -1, (0, 255, 0), 2)
+                        if area_max > 2500:
+                            rect = cv2.minAreaRect(areaMaxContour)
+                            box = np.int0(cv2.boxPoints(rect))
+                            cv2.drawContours(frame, [box], -1, (0, 255, 0), 2)
+                            cv2.putText(frame, color, (box[0][0], box[0][1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
                 cv2.imshow('Frame', frame)
                 key = cv2.waitKey(1)
@@ -66,5 +64,5 @@ class ColorDetector:
         cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-    detector = ColorDetector(target_color=('blue',))
+    detector = ColorDetector(target_colors=('red', 'green', 'blue'))
     detector.run()
