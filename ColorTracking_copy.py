@@ -1,25 +1,26 @@
 #!/usr/bin/python3
 # coding=utf8
+
 import sys
 sys.path.append('/home/pi/ArmPi/')
+
 import cv2
 import time
 import Camera
 import threading
+import math
 from LABConfig import *
 from ArmIK.Transform import *
 from ArmIK.ArmMoveIK import *
 import HiwonderSDK.Board as Board
 from CameraCalibration.CalibrationConfig import *
 
-# Check if the Python version is 3, if not, print a message and exit
 if sys.version_info.major == 2:
     print('Please run this program with python3!')
     sys.exit(0)
 
 AK = ArmIK()
 
-# Define the RGB values for different colors
 range_rgb = {
     'red': (0, 0, 255),
     'blue': (255, 0, 0),
@@ -30,35 +31,31 @@ range_rgb = {
 
 __target_color = ('red',)
 
-# Function to set the target color for detection
+# Set the target color for detection
 def setTargetColor(target_color):
     global __target_color
+
     __target_color = target_color
     return (True, ())
 
-# Function to find the contour with the largest area
-# The parameter is the list of contours to compare
+# Find the contour with the maximum area
 def getAreaMaxContour(contours):
     contour_area_temp = 0
     contour_area_max = 0
     area_max_contour = None
 
-    # Iterate over all contours
-    for c in contours:  
-        contour_area_temp = math.fabs(cv2.contourArea(c))  # Calculate the contour area
+    for c in contours:
+        contour_area_temp = math.fabs(cv2.contourArea(c))
         if contour_area_temp > contour_area_max:
             contour_area_max = contour_area_temp
-            # Only when the area is greater than 300, the contour with the largest area is valid, to filter out interference
-            if contour_area_temp > 300:  
+            if contour_area_temp > 300:
                 area_max_contour = c
 
-    # Return the largest contour
     return area_max_contour, contour_area_max
 
-# The angle at which the gripper closes when gripping
 servo1 = 500
 
-# Initial position
+# Initial position setup
 def initMove():
     Board.setBusServoPulse(1, servo1 - 50, 300)
     Board.setBusServoPulse(2, 500, 500)
@@ -70,7 +67,7 @@ def setBuzzer(timer):
     time.sleep(timer)
     Board.setBuzzer(0)
 
-# Set the color of the RGB light on the expansion board to match the color to be tracked
+# Set the RGB light color on the extension board to match the target color
 def set_rgb(color):
     if color == "red":
         Board.RGB.setPixelColor(0, Board.PixelColor(255, 0, 0))
@@ -103,18 +100,8 @@ start_count_t1 = True
 
 # Reset variables
 def reset():
-    global count
-    global track
-    global _stop
-    global get_roi
-    global first_move
-    global center_list
-    global __isRunning
-    global detect_color
-    global action_finish
-    global start_pick_up
-    global __target_color
-    global start_count_t1
+    global count, track, _stop, get_roi, first_move, center_list, __isRunning
+    global detect_color, action_finish, start_pick_up, __target_color, start_count_t1
     
     count = 0
     _stop = False
@@ -128,30 +115,28 @@ def reset():
     start_pick_up = False
     start_count_t1 = True
 
-# Called when the app is initialized
+# Initialization function called by the app
 def init():
     print("ColorTracking Init")
     initMove()
 
-# Called when the app starts playing
+# Start function called by the app
 def start():
     global __isRunning
     reset()
     __isRunning = True
     print("ColorTracking Start")
 
-# Called when the app stops playing
+# Stop function called by the app
 def stop():
-    global _stop
-    global __isRunning
+    global _stop, __isRunning
     _stop = True
     __isRunning = False
     print("ColorTracking Stop")
 
-# Called when the app exits the game
+# Exit function called by the app
 def exit():
-    global _stop
-    global __isRunning
+    global _stop, __isRunning
     _stop = True
     __isRunning = False
     print("ColorTracking Exit")
@@ -163,81 +148,69 @@ unreachable = False
 world_X, world_Y = 0, 0
 world_x, world_y = 0, 0
 
-# Robot arm movement thread
+# Thread for arm movement
 def move():
-    global rect
-    global track
-    global _stop
-    global get_roi
-    global unreachable
-    global __isRunning
-    global detect_color
-    global action_finish
-    global rotation_angle
-    global world_X, world_Y
-    global world_x, world_y
-    global center_list, count
-    global start_pick_up, first_move
+    global rect, track, _stop, get_roi, unreachable, __isRunning, detect_color
+    global action_finish, rotation_angle, world_X, world_Y, world_x, world_y
+    global center_list, count, start_pick_up, first_move
 
-    # Different color wooden blocks placed coordinates (x, y, z)
     coordinate = {
         'red':   (-15 + 0.5, 12 - 0.5, 1.5),
         'green': (-15 + 0.5, 6 - 0.5,  1.5),
         'blue':  (-15 + 0.5, 0 - 0.5,  1.5),
     }
+
     while True:
         if __isRunning:
-            if first_move and start_pick_up: # When the object is detected for the first time               
+            if first_move and start_pick_up:
                 action_finish = False
                 set_rgb(detect_color)
-                setBuzzer(0.1)               
-                result = AK.setPitchRangeMoving((world_X, world_Y - 2, 5), -90, -90, 0) # Do not fill in the running time parameter, adaptive running time
+                setBuzzer(0.1)
+                result = AK.setPitchRangeMoving((world_X, world_Y - 2, 5), -90, -90, 0)
                 if result == False:
                     unreachable = True
                 else:
                     unreachable = False
-                time.sleep(result[2]/1000) # The third item of the return parameter is time
+                time.sleep(result[2]/1000)
                 start_pick_up = False
                 first_move = False
                 action_finish = True
-            elif not first_move and not unreachable: # Not the first time the object is detected
+            elif not first_move and not unreachable:
                 set_rgb(detect_color)
-                if track: # If it is the tracking phase
-                    if not __isRunning: # Stop and exit flag bit detection
+                if track:
+                    if not __isRunning:
                         continue
                     AK.setPitchRangeMoving((world_x, world_y - 2, 5), -90, -90, 0, 20)
-                    time.sleep(0.02)                    
+                    time.sleep(0.02)
                     track = False
-                if start_pick_up: #If the object has not moved for a while, start picking up
+                if start_pick_up:
                     action_finish = False
-                    if not __isRunning: # Stop and exit flag bit detection
+                    if not __isRunning:
                         continue
-                    Board.setBusServoPulse(1, servo1 - 280, 500)  # The claw opens
-                    # Calculate the angle that the gripper needs to rotate
+                    Board.setBusServoPulse(1, servo1 - 280, 500)
                     servo2_angle = getAngle(world_X, world_Y, rotation_angle)
                     Board.setBusServoPulse(2, servo2_angle, 500)
                     time.sleep(0.8)
                     
                     if not __isRunning:
                         continue
-                    AK.setPitchRangeMoving((world_X, world_Y, 2), -90, -90, 0, 1000)  # Lower the height
+                    AK.setPitchRangeMoving((world_X, world_Y, 2), -90, -90, 0, 1000)
                     time.sleep(2)
                     
                     if not __isRunning:
                         continue
-                    Board.setBusServoPulse(1, servo1, 500)  # The gripper closes
+                    Board.setBusServoPulse(1, servo1, 500)
                     time.sleep(1)
                     
                     if not __isRunning:
                         continue
                     Board.setBusServoPulse(2, 500, 500)
-                    AK.setPitchRangeMoving((world_X, world_Y, 12), -90, -90, 0, 1000)  # The robot arm lifts up
+                    AK.setPitchRangeMoving((world_X, world_Y, 12), -90, -90, 0, 1000)
                     time.sleep(1)
                     
                     if not __isRunning:
                         continue
-                    # Classify and place different color blocks
-                    result = AK.setPitchRangeMoving((coordinate[detect_color][0], coordinate[detect_color][1], 12), -90, -90, 0)   
+                    result = AK.setPitchRangeMoving((coordinate[detect_color][0], coordinate[detect_color][1], 12), -90, -90, 0)
                     time.sleep(result[2]/1000)
                     
                     if not __isRunning:
@@ -245,7 +218,7 @@ def move():
                     servo2_angle = getAngle(coordinate[detect_color][0], coordinate[detect_color][1], -90)
                     Board.setBusServoPulse(2, servo2_angle, 500)
                     time.sleep(0.5)
-
+                    
                     if not __isRunning:
                         continue
                     AK.setPitchRangeMoving((coordinate[detect_color][0], coordinate[detect_color][1], coordinate[detect_color][2] + 3), -90, -90, 0, 500)
@@ -258,7 +231,7 @@ def move():
                     
                     if not __isRunning:
                         continue
-                    Board.setBusServoPulse(1, servo1 - 200, 500)  # The claw opens and puts down the object
+                    Board.setBusServoPulse(1, servo1 - 200, 500)
                     time.sleep(0.8)
                     
                     if not __isRunning:
@@ -266,7 +239,7 @@ def move():
                     AK.setPitchRangeMoving((coordinate[detect_color][0], coordinate[detect_color][1], 12), -90, -90, 0, 800)
                     time.sleep(0.8)
 
-                    initMove()  # Return to the initial position
+                    initMove()
                     time.sleep(1.5)
 
                     detect_color = 'None'
@@ -287,7 +260,7 @@ def move():
                 time.sleep(1.5)
             time.sleep(0.01)
 
-# Run the sub-thread
+# Run the thread
 th = threading.Thread(target=move)
 th.setDaemon(True)
 th.start()
@@ -295,23 +268,12 @@ th.start()
 t1 = 0
 roi = ()
 last_x, last_y = 0, 0
+
 def run(img):
-    global roi
-    global rect
-    global count
-    global track
-    global get_roi
-    global center_list
-    global __isRunning
-    global unreachable
-    global detect_color
-    global action_finish
-    global rotation_angle
-    global last_x, last_y
-    global world_X, world_Y
-    global world_x, world_y
-    global start_count_t1, t1
-    global start_pick_up, first_move
+    global roi, rect, count, track, get_roi, center_list, __isRunning
+    global unreachable, detect_color, action_finish, rotation_angle
+    global last_x, last_y, world_X, world_Y, world_x, world_y
+    global start_count_t1, t1, start_pick_up, first_move
     
     img_copy = img.copy()
     img_h, img_w = img.shape[:2]
@@ -323,12 +285,12 @@ def run(img):
      
     frame_resize = cv2.resize(img_copy, size, interpolation=cv2.INTER_NEAREST)
     frame_gb = cv2.GaussianBlur(frame_resize, (11, 11), 11)
-    # If an object is detected in a certain area, keep detecting that area until it is no longer detected
+    
     if get_roi and start_pick_up:
         get_roi = False
         frame_gb = getMaskROI(frame_gb, roi, size)    
     
-    frame_lab = cv2.cvtColor(frame_gb, cv2.COLOR_BGR2LAB)  # Convert the image to LAB space
+    frame_lab = cv2.cvtColor(frame_gb, cv2.COLOR_BGR2LAB)
     
     area_max = 0
     areaMaxContour = 0
@@ -336,29 +298,27 @@ def run(img):
         for i in color_range:
             if i in __target_color:
                 detect_color = i
-                frame_mask = cv2.inRange(frame_lab, color_range[detect_color][0], color_range[detect_color][1])  # Perform bitwise operation on the original image and mask
-                opened = cv2.morphologyEx(frame_mask, cv2.MORPH_OPEN, np.ones((6, 6), np.uint8))  # Open operation
-                closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, np.ones((6, 6), np.uint8))  # Close operation
-                contours = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2]  # Find contours
-                areaMaxContour, area_max = getAreaMaxContour(contours)  # Find the largest contour
-        if area_max > 2500:  # Found the largest area
+                frame_mask = cv2.inRange(frame_lab, color_range[detect_color][0], color_range[detect_color][1])
+                opened = cv2.morphologyEx(frame_mask, cv2.MORPH_OPEN, np.ones((6, 6), np.uint8))
+                closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, np.ones((6, 6), np.uint8))
+                contours = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2]
+                areaMaxContour, area_max = getAreaMaxContour(contours)
+        if area_max > 2500:
             rect = cv2.minAreaRect(areaMaxContour)
             box = np.int0(cv2.boxPoints(rect))
 
-            roi = getROI(box) #Get the roi area
+            roi = getROI(box)
             get_roi = True
 
-            img_centerx, img_centery = getCenter(rect, roi, size, square_length)  # Get the center coordinates of the block
-            world_x, world_y = convertCoordinate(img_centerx, img_centery, size) #Convert to real world coordinates
-            
+            img_centerx, img_centery = getCenter(rect, roi, size, square_length)
+            world_x, world_y = convertCoordinate(img_centerx, img_centery, size)
             
             cv2.drawContours(img, [box], -1, range_rgb[detect_color], 2)
             cv2.putText(img, '(' + str(world_x) + ',' + str(world_y) + ')', (min(box[0, 0], box[2, 0]), box[2, 1] - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, range_rgb[detect_color], 1) #Draw the center point
-            distance = math.sqrt(pow(world_x - last_x, 2) + pow(world_y - last_y, 2)) #Compare the last coordinates to judge whether to move
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, range_rgb[detect_color], 1)
+            distance = math.sqrt(pow(world_x - last_x, 2) + pow(world_y - last_y, 2))
             last_x, last_y = world_x, world_y
             track = True
-            # Cumulative judgment
             if action_finish:
                 if distance < 0.3:
                     center_list.extend((world_x, world_y))
@@ -392,3 +352,8 @@ if __name__ == '__main__':
             frame = img.copy()
             Frame = run(frame)           
             cv2.imshow('Frame', Frame)
+            key = cv2.waitKey(1)
+            if key == 27:
+                break
+    my_camera.camera_close()
+    cv2.destroyAllWindows()
