@@ -16,11 +16,9 @@ from CameraCalibration.CalibrationConfig import *
 class ColorTracker:
     def __init__(self):
         self.range_rgb = {
-            'red': (0, 0, 255),
-            'blue': (255, 0, 0),
-            'green': (0, 255, 0),
-            'black': (0, 0, 0),
-            'white': (255, 255, 255),
+            'red': [(0, 0, 100), (50, 50, 255)],
+            'blue': [(100, 0, 0), (255, 100, 100)],
+            'green': [(0, 100, 0), (100, 255, 100)],
         }
         self.target_color = ('red',)
         self.camera = Camera.Camera()
@@ -42,7 +40,7 @@ class ColorTracker:
         frame_gb = self.resize_and_blur(img)
         frame_lab = self.convert_to_lab(frame_gb)
         for color in self.target_color:
-            frame_mask = cv2.inRange(frame_lab, self.range_rgb[color])
+            frame_mask = cv2.inRange(frame_lab, self.range_rgb[color][0], self.range_rgb[color][1])
             opened = cv2.morphologyEx(frame_mask, cv2.MORPH_OPEN, np.ones((6, 6), np.uint8))
             closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, np.ones((6, 6), np.uint8))
             contours = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2]
@@ -50,9 +48,9 @@ class ColorTracker:
             if area_max > 2500:
                 rect = cv2.minAreaRect(areaMaxContour)
                 box = np.int0(cv2.boxPoints(rect))
-                cv2.drawContours(img, [box], -1, self.range_rgb[color], 2)
+                cv2.drawContours(img, [box], -1, self.range_rgb[color][1], 2)
                 cv2.putText(img, color, (min(box[0, 0], box[2, 0]), box[2, 1] - 10),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, self.range_rgb[color], 1)
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, self.range_rgb[color][1], 1)
         return img
 
     @staticmethod
@@ -83,7 +81,7 @@ def main():
     tracker = ColorTracker()
 
     # Set the target color
-    tracker.set_target_color('blue',)
+    tracker.set_target_color('blue')
 
     # Run the color tracking
     tracker.run()
