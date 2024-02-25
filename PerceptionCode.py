@@ -1,52 +1,70 @@
+import sys
+sys.path.append('/home/pi/ArmPi/')
 import cv2
-import numpy as np
+import time
+import Camera
+import threading
+from LABConfig import *
+from ArmIK.Transform import *
+from ArmIK.ArmMoveIK import *
+import HiwonderSDK.Board as Board
+from CameraCalibration.CalibrationConfig import *
 
-class ColorTracker:
-    def __init__(self):
-        self.color_values = {
-            'red': [0, 0, 255],  # BGR value for red
-            'green': [0, 255, 0],  # BGR value for green
-            'blue': [255, 0, 0]  # BGR value for blue
-        }
-        self.camera = cv2.VideoCapture(0)
+class ColorDetector:
+    def __init__(self, target_color=('red',)):
+        self.target_color = target_color
+        self.camera = Camera.Camera()
+        self.camera.camera_open()
 
-    def resize_and_blur(self, img):
-        img = cv2.resize(img, (640, 480))
-        img = cv2.GaussianBlur(img, (3, 3), 3)
-        return img
+    def getAreaMaxContour(self, contours):
+        contour_area_temp = 0
+        contour_area_max = 0
+        area_max_contour = None
 
-    def get_contours(self, img, color):
-        lower = np.array(self.color_values[color])
-        upper = np.array(self.color_values[color])
-        mask = cv2.inRange(img, lower, upper)
-        return cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
+        for c in contours:
+            contour_area_temp = math.fabs(cv2.contourArea(c))
+            if contour_area_temp > contour_area_max:
+                contour_area_max = contour_area_temp
+                if contour_area_temp > 300:
+                    area_max_contour = c
 
-    def draw_bounding_box(self, img, contours, color):
-        if contours:
-            c = max(contours, key=cv2.contourArea)
-            x, y, w, h = cv2.boundingRect(c)
-            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            cv2.putText(img, color, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
-        return img
-
-    def display(self, img):
-        cv2.imshow('Image', img)
-        cv2.waitKey(1)
+        return area_max_contour, contour_area_max
 
     def run(self):
         while True:
-            ret, frame = self.camera.read()
-            if not ret:
-                break
-            frame = self.resize_and_blur(frame)
-            for color in self.color_values:
-                contours = self.get_contours(frame, color)
-                frame = self.draw_bounding_box(frame, contours, color)
-            self.display(frame)
+            img = self.camera.frame
+            if img is not None:
+                frame = img.copy()
+                img_h, img_w = frame.shape[:2]
 
-        self.camera.release()
+                frame_resize = cv2.resize(frame, (640, 480), interpolation=cv2.INTER_NEAREST)
+                frame_gb = cv2.GaussianBlur(frame_resize, (11, 11), 11)
+                frame_lab = cv2.cvtColor(frame_gb, cv2.COLOR_BGR2LAB)
+
+                area_max = 0
+                areaMaxContour = 0
+
+                for color in self.target_color:
+                    if color in color_range:
+                        frame_mask = cv2.inRange(frame_lab, color_range[color][0], color_range[color][1])
+                        opened = cv2.morphologyEx(frame_mask, cv2.MORPH_OPEN, np.ones((6, 6), np.uint8))
+                        closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, np.ones((6, 6), np.uint8))
+                        contours = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2]
+                        areaMaxContour, area_max = self.getAreaMaxContour(contours)
+
+                if area_max > 2500:
+                    rect = cv2.minAreaRect(areaMaxContour)
+                    box = np.int0(cv2.boxPoints(rect))
+                    cv2.drawContours(frame, [box], -1, (0, 255, 0), 2)
+
+                cv2.imshow('Frame', frame)
+                key = cv2.waitKey(1)
+                if key == 27:  # ESC key to break
+                    break
+
+        self.camera.camera_close()
         cv2.destroyAllWindows()
 
-if __name__ == "__main__":
-    tracker = ColorTracker()
-    tracker.run()
+if __name__ == '__main__':
+    detector = ColorDetector(target_color=('blue',))
+    detector.run()
