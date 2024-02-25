@@ -12,7 +12,7 @@ class ColorTracker:
 
     def resize_and_blur(self, img):
         img = cv2.resize(img, (640, 480))
-        img = cv2.GaussianBlur(img, (3, 3), 3)
+        img = cv2.GaussianBlur(img, (5, 5), 5)
         return img
 
     def convert_to_lab(self, img):
@@ -40,10 +40,10 @@ class ColorTracker:
             if not ret:
                 break
             frame = self.resize_and_blur(frame)
+            frame = self.convert_to_lab(frame)
             for color in self.color_range:
                 contours = self.get_contours(frame, color)
                 frame = self.draw_bounding_box(frame, contours, color)
-            frame = self.convert_to_lab(frame)
             self.display(frame)
 
         self.camera.release()
