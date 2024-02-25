@@ -4,9 +4,9 @@ import numpy as np
 class ColorTracker:
     def __init__(self):
         self.color_range = {
-            'red': ([0, 0, 120], [80, 80, 255]),
-            'green': ([0, 120, 0], [80, 255, 80]),
-            'blue': ([120, 0, 0], [255, 80, 80])
+            'red': ([0, 128, 128], [100, 255, 255]),  # LAB color range for red
+            'green': ([0, 128, 128], [100, 255, 255]),  # LAB color range for green
+            'blue': ([0, 128, 128], [100, 255, 255])  # LAB color range for blue
         }
         self.camera = cv2.VideoCapture(0)
 
@@ -40,7 +40,7 @@ class ColorTracker:
             if not ret:
                 break
             frame = self.resize_and_blur(frame)
-
+            frame = self.convert_to_lab(frame)
             for color in self.color_range:
                 contours = self.get_contours(frame, color)
                 frame = self.draw_bounding_box(frame, contours, color)
