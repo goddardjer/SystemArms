@@ -50,9 +50,9 @@ class ColorTracker:
             if area_max > 2500:
                 rect = cv2.minAreaRect(areaMaxContour)
                 box = np.int0(cv2.boxPoints(rect))
-                cv2.drawContours(img, [box], -1, self.range_rgb[i], 2)
-                cv2.putText(img, i, (min(box[0, 0], box[2, 0]), box[2, 1] - 10),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, self.range_rgb[i], 1)
+                cv2.drawContours(img, [box], -1, self.range_rgb[color], 2)
+                cv2.putText(img, color, (min(box[0, 0], box[2, 0]), box[2, 1] - 10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, self.range_rgb[color], 1)
         return img
 
     @staticmethod
