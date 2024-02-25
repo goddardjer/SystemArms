@@ -3,10 +3,10 @@ import numpy as np
 
 class ColorTracker:
     def __init__(self):
-        self.color_range = {
-            'red': ([20, 150, 150], [60, 200, 255]),  # LAB color range for red
-            'green': ([20, -80, -10], [90, -70, 10]),  # LAB color range for green
-            'blue': ([20, -10, -80], [100, 10, -70])  # LAB color range for blue
+        self.color_values = {
+            'red': [0, 0, 255],  # BGR value for red
+            'green': [0, 255, 0],  # BGR value for green
+            'blue': [255, 0, 0]  # BGR value for blue
         }
         self.camera = cv2.VideoCapture(0)
 
@@ -15,11 +15,10 @@ class ColorTracker:
         img = cv2.GaussianBlur(img, (3, 3), 3)
         return img
 
-    def convert_to_lab(self, img):
-        return cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
-
     def get_contours(self, img, color):
-        mask = cv2.inRange(img, np.array(self.color_range[color][0]), np.array(self.color_range[color][1]))
+        lower = np.array(self.color_values[color])
+        upper = np.array(self.color_values[color])
+        mask = cv2.inRange(img, lower, upper)
         return cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
 
     def draw_bounding_box(self, img, contours, color):
@@ -40,8 +39,7 @@ class ColorTracker:
             if not ret:
                 break
             frame = self.resize_and_blur(frame)
-            frame = self.convert_to_lab(frame)
-            for color in self.color_range:
+            for color in self.color_values:
                 contours = self.get_contours(frame, color)
                 frame = self.draw_bounding_box(frame, contours, color)
             self.display(frame)
