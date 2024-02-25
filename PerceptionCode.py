@@ -4,9 +4,9 @@ import numpy as np
 class ColorTracker:
     def __init__(self):
         self.color_range = {
-            'red': ([0, 0, 128], [255, 255, 255]),
-            'green': ([0, 128, 0], [255, 255, 255]),
-            'blue': ([128, 0, 0], [255, 255, 255])
+            'red': ([0, 0, 100], [100, 100, 255]),
+            'green': ([0, 100, 0], [100, 255, 100]),
+            'blue': ([100, 0, 0], [255, 100, 100])
         }
         self.camera = cv2.VideoCapture(0)
 
