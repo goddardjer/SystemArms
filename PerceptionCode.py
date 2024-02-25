@@ -12,7 +12,7 @@ class ColorTracker:
 
     def resize_and_blur(self, img):
         img = cv2.resize(img, (640, 480))
-        img = cv2.GaussianBlur(img, (5, 5), 5)
+        img = cv2.GaussianBlur(img, (3, 3), 3)
         return img
 
     def convert_to_lab(self, img):
