@@ -32,7 +32,7 @@ rotation_angle = 0
 # Function to pick up a block at the specified coordinates
 def pick_up_block(x, y, z, color):
     # Pick up the block
-    result = AK.setPitchRangeMoving((200, 200, 1.5), -90, -90, 0)
+    result = AK.setPitchRangeMoving((200, 200, 1.5), -90, -90, 1000)
     if result == False:
         print("Unreachable 0")
     else:
@@ -47,7 +47,7 @@ def pick_up_block(x, y, z, color):
         time.sleep(1)
 
     # Move to the target location
-    result = AK.setPitchRangeMoving((x, y, z + 10), -90, -90, 0)
+    result = AK.setPitchRangeMoving((x, y, z + 10), -90, -90, 1000)
     if result == False:
         print("Unreachable 1")
     else:
