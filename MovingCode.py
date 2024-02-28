@@ -34,7 +34,7 @@ def pick_up_block(x, y, z, color):
     # Pick up the block
     result = AK.setPitchRangeMoving((200, 200, 1.5), -90, -90, 0)
     if result == False:
-        print("Unreachable")
+        print("Unreachable 0")
     else:
         time.sleep(result[2]/1000)
         Board.setBusServoPulse(1, 500 - 280, 500)
@@ -49,14 +49,14 @@ def pick_up_block(x, y, z, color):
     # Move to the target location
     result = AK.setPitchRangeMoving((x, y, z + 10), -90, -90, 0)
     if result == False:
-        print("Unreachable")
+        print("Unreachable 1")
     else:
         time.sleep(result[2]/1000)
 
     # Lower the block
     result = AK.setPitchRangeMoving((x, y, z), -90, -90, 0)
     if result == False:
-        print("Unreachable")
+        print("Unreachable 2")
     else:
         time.sleep(result[2]/1000)
         Board.setBusServoPulse(1, 500 - 280, 500)
