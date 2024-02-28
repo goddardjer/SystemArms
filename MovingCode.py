@@ -33,7 +33,7 @@ rotation_angle = 0
 def pick_up_block(x, y, z, color):
     # Pick up the block
     Board.setBusServoPulse(1, 500 - 280, 500)
-    result = AK.setPitchRangeMoving((-2, 18, 1.5), -90, -90, 1000)
+    result = AK.setPitchRangeMoving((-2, 18, 1.5), 0, 0, 1000)
     if result == False:
         print("Unreachable 0")
     else:
