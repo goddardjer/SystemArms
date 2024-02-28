@@ -8,11 +8,14 @@ from ArmIK.ArmMoveIK import *
 import HiwonderSDK.Board as Board
 from CameraCalibration.CalibrationConfig import *
 
+
+
 class ColorDetector:
     def __init__(self, target_colors=('red', 'green', 'blue')):
         self.target_colors = target_colors
         self.camera = Camera.Camera()
         self.camera.camera_open()
+        self.size = (640, 480)
 
     def getAreaMaxContour(self, contours):
         contour_area_temp = 0
@@ -29,7 +32,7 @@ class ColorDetector:
         return area_max_contour, contour_area_max
 
     def process_frame(self, frame):
-        frame_resize = cv2.resize(frame, (640, 480), interpolation=cv2.INTER_NEAREST)
+        frame_resize = cv2.resize(frame, self.size, interpolation=cv2.INTER_NEAREST)
         frame_gb = cv2.GaussianBlur(frame_resize, (11, 11), 11)
         frame_lab = cv2.cvtColor(frame_gb, cv2.COLOR_BGR2LAB)
         return frame_lab
@@ -45,8 +48,8 @@ class ColorDetector:
             rect = cv2.minAreaRect(areaMaxContour)
             box = np.int0(cv2.boxPoints(rect))
             cv2.drawContours(frame, [box], -1, (0, 255, 0), 4)
-            center_x = np.mean(box[:, 0])/320
-            center_y = np.mean(box[:, 1])/240
+            center_x, center_y = convertCoordinate(np.mean(box[:, 0]), np.mean(box[:, 1]), self.size)
+            
             cv2.putText(frame, color, (box[0][0], box[0][1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 0), ) # 10 thickness
             cv2.putText(frame, f'x: {center_x:.2f}, y: {center_y:.2f}', (box[0][0], box[0][1] - 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 1)
 
