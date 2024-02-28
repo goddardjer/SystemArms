@@ -45,7 +45,14 @@ class ColorDetector:
             rect = cv2.minAreaRect(areaMaxContour)
             box = np.int0(cv2.boxPoints(rect))
             cv2.drawContours(frame, [box], -1, (0, 255, 0), 2)
-            cv2.putText(frame, color, (box[0][0], box[0][1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+
+            # Calculate the center of the contour
+            M = cv2.moments(areaMaxContour)
+            cX = int(M["m10"] / M["m00"])
+            cY = int(M["m01"] / M["m00"])
+
+            # Display the coordinates at the center of the contour
+            cv2.putText(frame, f"({cX}, {cY})", (cX, cY), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
     def run(self):
         while True:
@@ -65,6 +72,13 @@ class ColorDetector:
 
         self.camera.camera_close()
         cv2.destroyAllWindows()
+
+##########################################################################
+
+
+
+
+##########################################################################
 
 if __name__ == '__main__':
     detector = ColorDetector(target_colors=('red', 'green', 'blue'))
