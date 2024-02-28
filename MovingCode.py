@@ -21,6 +21,8 @@ def initMove():
     AK.setPitchRangeMoving((0, 10, 10), -30, -30, -90, 1500)
 
 
+rotation_angle = 0
+
 # Function to pick up a block at the specified coordinates
 def pick_up_block(x, y, z, color):
     result = AK.setPitchRangeMoving((x, y - 2, 5), -90, -90, 0)
