@@ -45,8 +45,8 @@ class ColorDetector:
             rect = cv2.minAreaRect(areaMaxContour)
             box = np.int0(cv2.boxPoints(rect))
             cv2.drawContours(frame, [box], -1, (0, 255, 0), 4)
-            center_x = np.mean(box[:, 0])/640
-            center_y = np.mean(box[:, 1])/480
+            center_x = np.mean(box[:, 0])/320
+            center_y = np.mean(box[:, 1])/240
             cv2.putText(frame, color, (box[0][0], box[0][1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 0), ) # 10 thickness
             cv2.putText(frame, f'x: {center_x:.2f}, y: {center_y:.2f}', (box[0][0], box[0][1] - 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 1)
 
