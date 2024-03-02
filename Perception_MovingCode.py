@@ -65,42 +65,36 @@ class ColorDetector:
 
                 for color in self.target_colors:
                     if color in color_range:
-                        self.draw_contours(frame, frame_lab, color)
+                        frame_mask = cv2.inRange(frame_lab, color_range[color][0], color_range[color][1])
+                        opened = cv2.morphologyEx(frame_mask, cv2.MORPH_OPEN, np.ones((6, 6), np.uint8))
+                        closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, np.ones((6, 6), np.uint8))
+                        contours = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2]
+                        areaMaxContour, area_max = self.getAreaMaxContour(contours)
+
+                        if area_max > 2500:
+                            rect = cv2.minAreaRect(areaMaxContour)
+                            box = np.int0(cv2.boxPoints(rect))
+                            cv2.drawContours(frame, [box], -1, (0, 255, 0), 2)
+
+                            # Calculate the center of the contour
+                            M = cv2.moments(areaMaxContour)
+                            cX = int(M["m10"] / M["m00"])
+                            cY = int(M["m01"] / M["m00"])
+
+                            # Display the coordinates at the center of the contour
+                            cv2.putText(frame, f"({cX}, {cY})", (cX, cY), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+
+                            # Return the color and coordinates of the detected block
+                            self.camera.camera_close()
+                            cv2.destroyAllWindows()
+                            return color, (cX, cY)
 
                 cv2.imshow('Frame', frame)
                 key = cv2.waitKey(1)
                 if key == 27:  # ESC key to break
                     break
 
-        self.camera.camera_close()
-        cv2.destroyAllWindows()
-
-    def get_block_info(self):
-        img = self.camera.frame
-        if img is not None:
-            frame = img.copy()
-            frame_lab = self.process_frame(frame)
-
-            for color in self.target_colors:
-                if color in color_range:
-                    frame_mask = cv2.inRange(frame_lab, color_range[color][0], color_range[color][1])
-                    opened = cv2.morphologyEx(frame_mask, cv2.MORPH_OPEN, np.ones((6, 6), np.uint8))
-                    closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, np.ones((6, 6), np.uint8))
-                    contours = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2]
-                    areaMaxContour, area_max = self.getAreaMaxContour(contours)
-
-                    if area_max > 2500:
-                        rect = cv2.minAreaRect(areaMaxContour)
-                        box = np.int0(cv2.boxPoints(rect))
-
-                        # Calculate the center of the contour
-                        M = cv2.moments(areaMaxContour)
-                        cX = int(M["m10"] / M["m00"])
-                        cY = int(M["m01"] / M["m00"])
-
-                        return color, (cX, cY)
-
-        return None, (0, 0)
+        
 
 ##########################################################################
 
