@@ -41,7 +41,7 @@ def pick_up_block(x, y, z, color):
         # Rotate the arm to the correct angle
         servo2_angle = getAngle(-2, 18, rotation_angle)
         Board.setBusServoPulse(2, servo2_angle, 500)
-        time.sleep(0.8)
+        time.sleep(2.8)
         # Close the hand
         Board.setBusServoPulse(1, 500, 500)
         time.sleep(1)
