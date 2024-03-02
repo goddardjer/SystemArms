@@ -136,11 +136,13 @@ class Moving:
             time.sleep(result[2]/1000)
             self.open_hand()
 
-    def pick_up_block(self, x, y, z, color):
+    def pick_up_block(self, color, x, y):
+        # Get the z coordinate for the color
+        z = self.coordinate[color][2]
         self.move_to_block(x, y, z)
-        self.move_to_final_location(x, y, z)
-        self.lower_block(x, y, z)
-        self.AK.setPitchRangeMoving((x, y, z + 12), -90, -90, 0, 1000)
+        self.move_to_final_location(*self.coordinate[color])
+        self.lower_block(*self.coordinate[color])
+        self.AK.setPitchRangeMoving((self.coordinate[color][0], self.coordinate[color][1], z + 12), -90, -90, 0, 1000)
         time.sleep(1)
         self.initMove()
         time.sleep(1.5)
