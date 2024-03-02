@@ -38,11 +38,11 @@ def pick_up_block(x, y, z, color):
     if result == False:
         print("Unreachable 0")
     else:
-        print("Moving to the block...")
-        time.sleep(result[2]/1000)
-        #servo2_angle = getAngle(200, 200, rotation_angle)
-        #Board.setBusServoPulse(2, servo2_angle, 500)
+        # Rotate the arm to the correct angle
+        servo2_angle = getAngle(-2, 18, rotation_angle)
+        Board.setBusServoPulse(2, servo2_angle, 500)
         time.sleep(0.8)
+        # Close the hand
         Board.setBusServoPulse(1, 500, 500)
         time.sleep(1)
 
