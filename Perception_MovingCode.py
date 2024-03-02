@@ -165,7 +165,7 @@ if __name__ == '__main__':
     detector = ColorDetector(target_colors=('red', 'green', 'blue'))
     moving = Moving()
 
-    color, (x, y) = detector.get_block_info()
+    color, (x, y) = detector.run()
     if color is not None:
         print(f"Detected a {color} block at ({x}, {y})")
         moving.pick_up_block(x, y, 1.5, color)
