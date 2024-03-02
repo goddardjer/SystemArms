@@ -40,11 +40,9 @@ def pick_up_block(x, y, z, color):
     else:
         print("Moving to the block...")
         time.sleep(result[2]/1000)
-        servo2_angle = getAngle(200, 200, rotation_angle)
-        Board.setBusServoPulse(2, servo2_angle, 500)
+        #servo2_angle = getAngle(200, 200, rotation_angle)
+        #Board.setBusServoPulse(2, servo2_angle, 500)
         time.sleep(0.8)
-        #AK.setPitchRangeMoving((200, 200, 2), -90, -90, 0, 1000)
-        #time.sleep(2)
         Board.setBusServoPulse(1, 500, 500)
         time.sleep(1)
 
