@@ -129,7 +129,7 @@ class Moving:
 
     def move_to_block(self, x, y, z):
         self.open_hand()
-        result = self.AK.setPitchRangeMoving((-2, 18, 1.5), -90, -90, 1000)
+        result = self.AK.setPitchRangeMoving((x, y, z), -90, -90, 1000)
         if result == False:
             print("Unreachable 0")
         else:
