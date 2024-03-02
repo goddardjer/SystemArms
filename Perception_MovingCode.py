@@ -121,7 +121,8 @@ class Moving:
             time.sleep(2.8)
             self.close_hand()
 
-    def move_to_final_location(self, x, y, z):
+    def move_to_final_location(self, color):
+        x, y, z = self.coordinate[color]  # Get coordinates from dictionary using color
         result = self.AK.setPitchRangeMoving((x, y, z + 10), -90, -90, 1000)
         if result == False:
             print("Unreachable 1")
@@ -136,13 +137,11 @@ class Moving:
             time.sleep(result[2]/1000)
             self.open_hand()
 
-    def pick_up_block(self, color, x, y):
-        # Get the z coordinate for the color
-        z = self.coordinate[color][2]
+    def pick_up_block(self, x, y, z, color):
         self.move_to_block(x, y, z)
-        self.move_to_final_location(*self.coordinate[color])
-        self.lower_block(*self.coordinate[color])
-        self.AK.setPitchRangeMoving((self.coordinate[color][0], self.coordinate[color][1], z + 12), -90, -90, 0, 1000)
+        self.move_to_final_location(color) 
+        self.lower_block(x, y, z)
+        self.AK.setPitchRangeMoving((x, y, z + 12), -90, -90, 0, 1000)
         time.sleep(1)
         self.initMove()
         time.sleep(1.5)
@@ -159,6 +158,6 @@ if __name__ == '__main__':
     color, (x, y) = detector.run()
     if color is not None:
         print(f"Detected a {color} block at ({x}, {y})")
-        moving.pick_up_block(color, x, y)
+        moving.pick_up_block(x, y, 1.5, color)
     else:
         print("No block detected")
