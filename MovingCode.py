@@ -1,3 +1,16 @@
+#!/usr/bin/python3
+# coding=utf8
+import sys
+sys.path.append('/home/pi/ArmPi/')
+import cv2
+import Camera
+from LABConfig import *
+from ArmIK.Transform import *
+from ArmIK.ArmMoveIK import *
+import HiwonderSDK.Board as Board
+from CameraCalibration.CalibrationConfig import *
+
+
 class Moving:
     def __init__(self):
         self.AK = ArmIK()
