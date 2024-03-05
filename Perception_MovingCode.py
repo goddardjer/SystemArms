@@ -153,12 +153,13 @@ class Moving:
 ##########################################################################
 
 if __name__ == '__main__':
-    detector = ColorDetector(target_colors=('red', 'green', 'blue'))
-    moving = Moving()
+    while True:
+        detector = ColorDetector(target_colors=('red', 'green', 'blue'))
+        moving = Moving()
 
-    color, (x, y) = detector.run()
-    if color is not None:
-        print(f"Detected a {color} block at ({x}, {y})")
-        moving.pick_up_block(x, y, 1.5, color)
-    else:
-        print("No block detected")
+        color, (x, y) = detector.run()
+        if color is not None:
+            print(f"Detected a {color} block at ({x}, {y})")
+            moving.pick_up_block(x, y, 1.5, color)
+        else:
+            print("No block detected")
