@@ -45,8 +45,8 @@ while True:
         print("Translation vectors : \n", tvecs)
 
         # Calculate and print the distance
-        distance = np.sqrt(np.sum(np.square(tvecs[-1])))
-        print("Estimated distance: ", distance)
+        distance = np.sqrt(np.sum(np.square(tvecs[-1]))) / 1000
+        print("Estimated distance: ", distance, " meters")
 
         # Break the loop
         break
