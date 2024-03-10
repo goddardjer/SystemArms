@@ -1,60 +1,57 @@
-#!/usr/bin/env python3
-# encoding:utf-8
-import cv2
-import time
 import numpy as np
-from CalibrationConfig import *
+import cv2
 
-cap = cv2.VideoCapture(-1)
+# Define the dimensions of checkerboard
+CHECKERBOARD = (5,3)
 
-param_data = np.load(calibration_param_path + '.npz')
+# Arrays to store object points and image points from all images
+objpoints = [] # 3d points in real world space
+imgpoints = [] # 2d points in image plane
 
-mtx = param_data['mtx_array']
-dist = param_data['dist_array']
+# Prepare grid and points to display
+objp = np.zeros((1, CHECKERBOARD[0] * CHECKERBOARD[1], 3), np.float32)
+objp[0,:,:2] = np.mgrid[0:CHECKERBOARD[0], 0:CHECKERBOARD[1]].T.reshape(-1, 2)
+
+# Multiply the grid by 41.5mm, which is the size of your squares
+objp = objp * 41.5
+
+# Open the camera
+cap = cv2.VideoCapture(0)
+
+distances = []
 
 while True:
-    ret, frame = cap.read()
-    if ret:
-        h, w = frame.shape[:2]
+    ret, img = cap.read()
+    if not ret:
         break
-newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w, h), 0, (w, h))
-mapx, mapy = cv2.initUndistortRectifyMap(mtx, dist, None, newcameramtx, (w,h), 5)
 
-criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
+    gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+    ret, corners = cv2.findChessboardCorners(gray, CHECKERBOARD, cv2.CALIB_CB_ADAPTIVE_THRESH + cv2.CALIB_CB_FAST_CHECK + cv2.CALIB_CB_NORMALIZE_IMAGE)
 
-while True:
-    ret, Frame = cap.read()
-    if ret:
-        frame = Frame.copy()
-        dst = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
-        img = dst.copy()
+    # If found, add object points, image points
+    if ret == True:
+        objpoints.append(objp)
+        imgpoints.append(corners)
 
-        cv2.line(dst, (0, int(h / 2)), (w, int(h / 2)), (0, 0, 255), 2)
-        cv2.line(dst, (int(w / 2), 0), (int(w / 2), h), (0, 0, 255), 2)        
-        cv2.imshow('dst',dst)
-        key = cv2.waitKey(1)
-        if key == 32:
-            gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-            ret_, corners = cv2.findChessboardCorners(gray, (calibration_size[1], calibration_size[0]),None)
-            if ret_:
-                corners2 = cv2.cornerSubPix(gray,corners,(11,11),(-1,-1),criteria)
-                sum_ = []
-                last_i = [0]
-                count = 0
-                for i in corners2:
-                    count += 1
-                    if count != 1 and (count - 1)%7 != 0:
-                        a_ = (last_i[0] - i[0])**2    
-                        sum_.append(np.sqrt(np.sum(a_)))
-                    last_i = i
-                
-                map_param = np.mean(sum_)
-                map_param = corners_length/map_param
+        # Draw and display the corners
+        cv2.drawChessboardCorners(img, CHECKERBOARD, corners, ret)
 
-                print('Mapping parameter:', map_param)
-        if key == 27:
+        # Calibrate the camera
+        ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+
+        # Calculate and print the distance
+        distance = np.sqrt(np.sum(np.square(tvecs[-1]))) / 1000
+        distances.append(distance)
+
+        # If we have 50 distances, break the loop
+        if len(distances) == 50:
             break
-    else:
-        time.sleep(0.01)
-cap.release()
+
+    cv2.imshow('img',img)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
 cv2.destroyAllWindows()
+
+# Print the average distance
+print("Average estimated distance: ", np.mean(distances), " meters")
