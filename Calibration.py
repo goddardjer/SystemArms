@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 
 # Define the dimensions of checkerboard
-CHECKERBOARD = (7,4)
+CHECKERBOARD = (7,5)
 
 # Arrays to store object points and image points from all images
 objpoints = [] # 3d points in real world space
