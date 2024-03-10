@@ -12,13 +12,11 @@ imgpoints = [] # 2d points in image plane
 objp = np.zeros((1, CHECKERBOARD[0] * CHECKERBOARD[1], 3), np.float32)
 objp[0,:,:2] = np.mgrid[0:CHECKERBOARD[0], 0:CHECKERBOARD[1]].T.reshape(-1, 2)
 
-# Multiply the grid by 41.5mm, which is the size of your squares
-objp = objp * 41.5
+# Multiply the grid by 75mm, which is the size of your squares
+objp = objp * 75
 
 # Open the camera
 cap = cv2.VideoCapture(0)
-
-distances = []
 
 while True:
     ret, img = cap.read()
@@ -39,19 +37,22 @@ while True:
         # Calibrate the camera
         ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
 
-        # Calculate and print the distance
-        distance = np.sqrt(np.sum(np.square(tvecs[-1]))) / 1000
-        distances.append(distance)
+        # Print the parameters
+        print("Retval: ", ret)
+        print("Camera matrix : \n", mtx)
+        print("Distortion coefficient : \n", dist)
+        print("Rotation Vectors : \n", rvecs)
+        print("Translation vectors : \n", tvecs)
 
-        # If we have 50 distances, break the loop
-        if len(distances) == 50:
-            break
+        # Calculate and print the distance
+        distance = np.sqrt(np.sum(np.square(tvecs[-1])))
+        print("Estimated distance: ", distance)
+
+        # Break the loop
+        break
 
     cv2.imshow('img',img)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
 cv2.destroyAllWindows()
-
-# Print the average distance
-print("Average estimated distance: ", np.mean(distances), " meters")
