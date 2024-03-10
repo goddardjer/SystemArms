@@ -24,23 +24,23 @@ class Moving:
     def initMove(self):
         Board.setBusServoPulse(1, 500 - 50, 300)
         Board.setBusServoPulse(2, 500, 500)
-        self.AK.setPitchRangeMoving((0, 10, 10), -30, -30, -90, 1500)
+        self.AK.setPitchRangeMoving((0, 10, 10), -90, -90, -90, 1500)
 
     def move_arm_with_keyboard(self):
         while True:
             key = input("Enter a key: ")
             if key == 'w':
-                self.y += 5
+                self.y += 2
             elif key == 's':
-                self.y -= 5
+                self.y -= 2
             elif key == 'a':
-                self.x -= 5
+                self.x -= 2
             elif key == 'd':
                 self.x += 5
             elif key == 'q':
-                self.z -= 5
+                self.z -= 2
             elif key == 'e':
-                self.z += 5
+                self.z += 2
             elif key == 'x':
                 break
 
