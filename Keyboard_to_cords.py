@@ -18,8 +18,8 @@ class Moving:
         }
         self.rotation_angle = 0
         self.x = 0
-        self.y = 10
-        self.z = 10
+        self.y = 8
+        self.z = 24
 
     def initMove(self):
         Board.setBusServoPulse(1, 500 - 50, 300)
