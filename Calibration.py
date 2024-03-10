@@ -49,7 +49,7 @@ while True:
         print("Estimated distance: ", distance)
 
         # Break the loop
-        break
+        #break
 
     cv2.imshow('img',img)
     if cv2.waitKey(1) & 0xFF == ord('q'):
