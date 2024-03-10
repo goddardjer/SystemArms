@@ -64,6 +64,8 @@ class Moving:
         self.x = 0
         self.y = 8
         self.z = 24
+        self.servo_horizontal = 500  # Initial position for horizontal servo
+        self.servo_vertical = 500    # Initial position for vertical servo
 
     def initMove(self):
         Board.setBusServoPulse(1, 500 - 50, 300)
