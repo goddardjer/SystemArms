@@ -25,7 +25,7 @@ class CircleDetector:
         frame_mask = cv2.inRange(frame_lab, color_range[self.target_color][0], color_range[self.target_color][1])
         opened = cv2.morphologyEx(frame_mask, cv2.MORPH_OPEN, np.ones((6, 6), np.uint8))
         closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, np.ones((6, 6), np.uint8))
-        circles = cv2.HoughCircles(closed, cv2.HOUGH_GRADIENT, dp=1, minDist=100, param1=60, param2=40, minRadius=50, maxRadius=400)
+        circles = cv2.HoughCircles(closed, cv2.HOUGH_GRADIENT, dp=1, minDist=50, param1=70, param2=40, minRadius=100, maxRadius=300)
 
 
         if circles is not None:
