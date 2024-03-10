@@ -99,13 +99,18 @@ class Moving:
         while True:
             key = input("Enter a key: ")
             if key == 'w':
-                self.move_vertical(1)
+                self.move_vertical(2)
             elif key == 's':
-                self.move_vertical(-1)
+                self.move_vertical(-2)
             elif key == 'a':
                 self.move_horozontal(-10)
             elif key == 'd':
                 self.move_horozontal(10)
+            elif key == 'f':
+                self.servo_horizontal = int(input("Enter horizontal value: "))
+                self.servo_vertical = int(input("Enter vertical value: "))
+                Board.setBusServoPulse(3, self.servo_horizontal, 500)
+                Board.setBusServoPulse(6, self.servo_vertical, 500)
             elif key == 'x':
                 break
 
