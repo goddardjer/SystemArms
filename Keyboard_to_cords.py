@@ -99,9 +99,9 @@ class Moving:
         while True:
             key = input("Enter a key: ")
             if key == 'w':
-                self.move_vertical(1.5)
+                self.move_vertical(1)
             elif key == 's':
-                self.move_vertical(-1.5)
+                self.move_vertical(-1)
             elif key == 'a':
                 self.move_horozontal(-10)
             elif key == 'd':
