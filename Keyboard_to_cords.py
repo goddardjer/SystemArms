@@ -83,10 +83,12 @@ class Moving:
     def move_horozontal(self, increment):
         self.servo_horizontal += increment
         Board.setBusServoPulse(6, self.servo_horizontal, 500)
+        print(f"Horizontal pulse: {self.servo_horizontal}")
 
     def move_vertical(self, increment):
         self.servo_vertical += increment
         Board.setBusServoPulse(3, self.servo_vertical, 500)
+        print(f"Vertical pulse: {self.servo_vertical}")
 
     def calculate_pulse(self, x, y):
         pulse_x = int(500 - (x / 0.29))
