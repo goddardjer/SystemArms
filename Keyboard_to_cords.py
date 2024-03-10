@@ -109,3 +109,4 @@ class Moving:
 if __name__ == '__main__':
     moving = Moving()
     moving.initMove()
+    moving.move_arm_with_keyboard()
