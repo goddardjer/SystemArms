@@ -109,8 +109,8 @@ class Moving:
             elif key == 'f':
                 self.servo_horizontal = int(input("Enter horizontal value: "))
                 self.servo_vertical = int(input("Enter vertical value: "))
-                Board.setBusServoPulse(3, self.servo_horizontal, 500)
-                Board.setBusServoPulse(6, self.servo_vertical, 500)
+                Board.setBusServoPulse(6, self.servo_horizontal, 500)
+                Board.setBusServoPulse(3, self.servo_vertical, 500)
             elif key == 'x':
                 break
 
