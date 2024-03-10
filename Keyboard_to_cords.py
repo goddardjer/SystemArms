@@ -114,7 +114,7 @@ if __name__ == '__main__':
     moving = Moving()
     moving.initMove()
     time.sleep(3)
-    #moving.move_arm_with_keyboard()
+    moving.move_arm_with_keyboard()
     # Board.setBusServoPulse(6, 460, 500)
     # Board.setBusServoPulse(3, 115, 500)
 
