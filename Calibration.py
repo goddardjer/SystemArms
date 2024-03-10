@@ -18,13 +18,6 @@ objp = objp * 41.5
 # Open the camera
 cap = cv2.VideoCapture(0)
 
-distances = []
-retvals = []
-camera_matrices = []
-distortion_coefficients = []
-rotation_vectors = []
-translation_vectors = []
-
 while True:
     ret, img = cap.read()
     if not ret:
@@ -44,29 +37,22 @@ while True:
         # Calibrate the camera
         ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
 
-        # Store the values
-        retvals.append(ret)
-        camera_matrices.append(mtx)
-        distortion_coefficients.append(dist)
-        rotation_vectors.append(rvecs)
-        translation_vectors.append(tvecs)
+        # Print the parameters
+        print("Retval: ", ret)
+        print("Camera matrix : \n", mtx)
+        print("Distortion coefficient : \n", dist)
+        print("Rotation Vectors : \n", rvecs)
+        print("Translation vectors : \n", tvecs)
 
-        # Calculate and store the distance
-        distance = np.sqrt(np.sum(np.square(tvecs[-1]))) / 1000
-        distances.append(distance)
+        # Calculate and print the distance
+        distance = np.sqrt(np.sum(np.square(tvecs[-1])))
+        print("Estimated distance: ", distance)
 
-        # If we have 50 sets of values, break the loop
-        if len(distances) == 10:
-            break
+        # Break the loop
+        break
 
     cv2.imshow('img',img)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
 cv2.destroyAllWindows()
-
-# Print the average values
-print("Average retval: ", np.mean(retvals))
-print("Average camera matrix: \n", np.mean(camera_matrices, axis=0))
-print("Average distortion coefficients: \n", np.mean(distortion_coefficients, axis=0))
-print("Average estimated distance: ", np.mean(distances), " meters")
