@@ -7,7 +7,6 @@ from ArmIK.Transform import *
 from ArmIK.ArmMoveIK import *
 import HiwonderSDK.Board as Board
 from CameraCalibration.CalibrationConfig import *
-import keyboard
 
 class Moving:
     def __init__(self):
@@ -29,19 +28,20 @@ class Moving:
 
     def move_arm_with_keyboard(self):
         while True:
-            if keyboard.is_pressed('w'):  # if key 'w' is pressed 
+            key = input("Enter a key: ")
+            if key == 'w':
                 self.y += 5
-            elif keyboard.is_pressed('s'):  # if key 's' is pressed 
+            elif key == 's':
                 self.y -= 5
-            elif keyboard.is_pressed('a'):  # if key 'a' is pressed 
+            elif key == 'a':
                 self.x -= 5
-            elif keyboard.is_pressed('d'):  # if key 'd' is pressed 
+            elif key == 'd':
                 self.x += 5
-            elif keyboard.is_pressed('q'):  # if key 'q' is pressed 
+            elif key == 'q':
                 self.z -= 5
-            elif keyboard.is_pressed('e'):  # if key 'e' is pressed 
+            elif key == 'e':
                 self.z += 5
-            elif keyboard.is_pressed('x'):  # if key 'x' is pressed 
+            elif key == 'x':
                 break
 
             result = self.AK.setPitchRangeMoving((self.x, self.y, self.z), -90, -90, 0, 1000)
