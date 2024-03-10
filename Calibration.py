@@ -44,6 +44,10 @@ while True:
         print("Rotation Vectors : \n", rvecs)
         print("Translation vectors : \n", tvecs)
 
+        # Calculate and print the distance
+        distance = np.sqrt(np.sum(np.square(tvecs[-1])))
+        print("Estimated distance: ", distance)
+
         # Break the loop
         break
 
