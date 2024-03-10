@@ -12,8 +12,8 @@ imgpoints = [] # 2d points in image plane
 objp = np.zeros((1, CHECKERBOARD[0] * CHECKERBOARD[1], 3), np.float32)
 objp[0,:,:2] = np.mgrid[0:CHECKERBOARD[0], 0:CHECKERBOARD[1]].T.reshape(-1, 2)
 
-# Multiply the grid by 75mm, which is the size of your squares
-objp = objp * 75
+# Multiply the grid by 41.5mm, which is the size of your squares
+objp = objp * 41.5
 
 # Open the camera
 cap = cv2.VideoCapture(0)
