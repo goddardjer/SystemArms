@@ -24,12 +24,12 @@ class Moving:
     def initMove(self):
         Board.setBusServoPulse(1, 500 - 50, 300)
         Board.setBusServoPulse(2, 500, 500)
-        self.AK.setPitchRangeMoving((0, 10, 10), -90, -90, -90, 1500)
+        self.AK.setPitchRangeMoving((0, 8, 24), -90, -90, -90, 1500)
 
     def move_arm_with_keyboard(self):
         while True:
             key = input("Enter a key: ")
-            if key == 'w':
+            if key == 'w's:
                 self.y += 2
             elif key == 's':
                 self.y -= 2
