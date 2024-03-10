@@ -33,18 +33,22 @@ while True:
 
         # Draw and display the corners
         cv2.drawChessboardCorners(img, CHECKERBOARD, corners, ret)
-    
+
+        # Calibrate the camera
+        ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+
+        # Print the parameters
+        print("Retval: ", ret)
+        print("Camera matrix : \n", mtx)
+        print("Distortion coefficient : \n", dist)
+        print("Rotation Vectors : \n", rvecs)
+        print("Translation vectors : \n", tvecs)
+
+        # Break the loop
+        break
+
     cv2.imshow('img',img)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
 cv2.destroyAllWindows()
-
-ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
-
-# Print the parameters
-print("Retval: ", ret)
-print("Camera matrix : \n", mtx)
-print("Distortion coefficient : \n", dist)
-print("Rotation Vectors : \n", rvecs)
-print("Translation vectors : \n", tvecs)
