@@ -56,7 +56,7 @@ while True:
         distances.append(distance)
 
         # If we have 50 sets of values, break the loop
-        if len(distances) == 50:
+        if len(distances) == 10:
             break
 
     cv2.imshow('img',img)
