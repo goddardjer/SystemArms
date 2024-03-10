@@ -29,7 +29,7 @@ class Moving:
     def move_arm_with_keyboard(self):
         while True:
             key = input("Enter a key: ")
-            if key == 'w's:
+            if key == 'w':
                 self.y += 2
             elif key == 's':
                 self.y -= 2
