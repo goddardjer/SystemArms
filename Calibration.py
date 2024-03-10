@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 
 # Define the dimensions of checkerboard
-CHECKERBOARD = (5,3)
+CHECKERBOARD = (7,4)
 
 # Arrays to store object points and image points from all images
 objpoints = [] # 3d points in real world space
@@ -13,7 +13,7 @@ objp = np.zeros((1, CHECKERBOARD[0] * CHECKERBOARD[1], 3), np.float32)
 objp[0,:,:2] = np.mgrid[0:CHECKERBOARD[0], 0:CHECKERBOARD[1]].T.reshape(-1, 2)
 
 # Multiply the grid by 75mm, which is the size of your squares
-objp = objp * 75
+objp = objp * 27
 
 # Open the camera
 cap = cv2.VideoCapture(0)
