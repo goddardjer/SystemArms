@@ -73,7 +73,7 @@ class Moving:
         self.AK.setPitchRangeMoving((0, 8, 18), -90, -90, 1500)
 
     def open_hand(self):
-        Board.setBusServoPulse(1, 500 - 280, 500)
+        Board.setBusServoPulse(1, 500 - 450, 500)
         time.sleep(0.8)
 
     def close_hand(self):
