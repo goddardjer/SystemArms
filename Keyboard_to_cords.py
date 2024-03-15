@@ -70,7 +70,7 @@ class Moving:
     def initMove(self):
         Board.setBusServoPulse(1, 500 - 50, 300)
         Board.setBusServoPulse(2, 500, 500)
-        self.AK.setPitchRangeMoving((0, 8, 24), -90, -90, 1500)
+        self.AK.setPitchRangeMoving((0, 8, 20), -90, -90, 1500)
 
     def open_hand(self):
         Board.setBusServoPulse(1, 500 - 280, 500)
@@ -111,6 +111,8 @@ class Moving:
                 self.servo_vertical = int(input("Enter vertical value: "))
                 Board.setBusServoPulse(6, self.servo_horizontal, 500)
                 Board.setBusServoPulse(3, self.servo_vertical, 500)
+            elif key == 'k':
+                self.open_hand()
             elif key == 'x':
                 break
 
