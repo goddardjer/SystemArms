@@ -77,7 +77,7 @@ class Moving:
         time.sleep(0.8)
 
     def close_hand(self):
-        Board.setBusServoPulse(1, 500, 500)
+        Board.setBusServoPulse(1, 550, 500)
         time.sleep(1)
 
     def move_horozontal(self, increment):
