@@ -117,6 +117,7 @@ class Moving:
                 Board.setBusServoPulse(3, self.servo_vertical, 500)
             elif key == 'k':
                 self.fire()
+                self.initMove()
             elif key == 'l':
                 self.close_hand()
             elif key == 'x':
