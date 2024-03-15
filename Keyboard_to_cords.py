@@ -86,7 +86,9 @@ class Moving:
 
     def full_reset(self):
         self.AK.setPitchRangeMoving((2, 28, 18), -30, -30, 1500)
+        time.sleep(1)
         self.AK.setPitchRangeMoving((2, 28, 0), -20, -20, 1500)
+        time.sleep(1)
 
     def move_horozontal(self, increment):
         self.servo_horizontal += increment
