@@ -80,6 +80,10 @@ class Moving:
         Board.setBusServoPulse(1, 550, 500)
         time.sleep(1)
 
+    def fire(self):
+        self.open_hand()
+        self.close_hand()
+
     def move_horozontal(self, increment):
         self.servo_horizontal += increment
         Board.setBusServoPulse(6, self.servo_horizontal, 500)
@@ -112,7 +116,7 @@ class Moving:
                 Board.setBusServoPulse(6, self.servo_horizontal, 500)
                 Board.setBusServoPulse(3, self.servo_vertical, 500)
             elif key == 'k':
-                self.open_hand()
+                self.fire()
             elif key == 'l':
                 self.close_hand()
             elif key == 'x':
