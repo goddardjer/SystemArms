@@ -84,6 +84,10 @@ class Moving:
         self.open_hand()
         self.close_hand()
 
+    def full_reset(self):
+        self.AK.setPitchRangeMoving((2, 28, 18), -30, -30, 1500)
+        self.AK.setPitchRangeMoving((2, 28, 0), -20, -20, 1500)
+
     def move_horozontal(self, increment):
         self.servo_horizontal += increment
         Board.setBusServoPulse(6, self.servo_horizontal, 500)
@@ -117,6 +121,7 @@ class Moving:
                 Board.setBusServoPulse(3, self.servo_vertical, 500)
             elif key == 'k':
                 self.fire()
+                self.full_reset()
                 self.initMove()
             elif key == 'l':
                 self.close_hand()
