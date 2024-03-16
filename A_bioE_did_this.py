@@ -97,6 +97,10 @@ class Moving:
         Board.setBusServoPulse(1, 500 - 450, 500)
         time.sleep(0.8)
 
+    def close_hand(self):
+        Board.setBusServoPulse(1, 500, 500)
+        time.sleep(0.8)
+
     def fire(self):
         self.open_hand()
 
@@ -109,11 +113,13 @@ def run_interpreter_and_move(interpreter, moving, circledetect):
     servoH, servoV = interpreter.run(center_x, center_y)
     moving.move_to_target(int(servoH), int(servoV))
     moving.fire()
+    
 
 if __name__ == '__main__':
     circledetect = CircleDetector()
     interpreter = Interpreter()
     moving = Moving()
+    moving.close_hand()
 
     run_interpreter_and_move(interpreter, moving, circledetect)
 
