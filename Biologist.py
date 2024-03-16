@@ -153,6 +153,9 @@ class Moving:
         Board.setBusServoPulse(3, servo_vertical, 500)
 
 
+def run_interpreter(interpreter, circledetect):
+    return interpreter.run(*circledetect.run())
+
 if __name__ == '__main__':
     circledetect = CircleDetector()
     interpreter = Interpreter()
@@ -165,12 +168,13 @@ if __name__ == '__main__':
     time.sleep(3)
 
     interpreter_thread.join()
-    target = interpreter_thread.result
+    if hasattr(interpreter_thread, 'result'):
+        target = interpreter_thread.result
 
-    moving.move_to_target(*target)
-    time.sleep(2)
-    moving.fire()
-    time.sleep(2)
-    moving.full_reset()
+        moving.move_to_target(*target)
+        time.sleep(2)
+        moving.fire()
+        time.sleep(2)
+        moving.full_reset()
     
     print("Done")
