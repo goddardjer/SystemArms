@@ -90,7 +90,7 @@ class Interpreter:
 class Moving:
     def __init__(self):
         self.servo_horizontal = 500  # Initial position for horizontal servo
-        self.servo_vertical = 200    # Initial position for vertical servo
+        self.servo_vertical = 300    # Initial position for vertical servo
 
     def open_hand(self):
         Board.setBusServoPulse(1, 500 - 450, 500)
@@ -105,7 +105,7 @@ class Moving:
 
     def move_to_target(self, servo_horizontal, servo_vertical):
         Board.setBusServoPulse(6, servo_horizontal, 500)
-        Board.setBusServoPulse(3, servo_vertical, 500)
+        Board.setBusServoPulse(2, servo_vertical, 500)  # Adjust this value based on your setup
 
 def run_interpreter_and_move(interpreter, moving, circledetect):
     center_x, center_y = circledetect.run()
