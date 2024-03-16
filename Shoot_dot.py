@@ -60,11 +60,12 @@ class CircleDetector:
                     break
 
                 if self.center_x is not None and self.center_y is not None:
+                    self.camera.camera_close()
+                    cv2.destroyAllWindows()
                     return self.center_x, self.center_y
 
         self.camera.camera_close()
         cv2.destroyAllWindows()
-
 ###########################################################
 
 class Interpreter:
@@ -153,9 +154,9 @@ class Moving:
 
 
 if __name__ == '__main__':
-    # Create an instance of the Interpreter class and run it
+     # Create an instance of the Interpreter class and run it
     interpreter = Interpreter()
-    servo_horizontal, servo_vertical = interpreter.run()
+    center_x, center_y = interpreter.run()
 
     # Create an instance of the Moving class
     moving = Moving()
@@ -164,12 +165,14 @@ if __name__ == '__main__':
     moving.initMove()
     time.sleep(3)
 
-    # Set the servo positions
-    moving.servo_horizontal = servo_horizontal
-    moving.servo_vertical = servo_vertical
-    Board.setBusServoPulse(6, moving.servo_horizontal, 500)
-    Board.setBusServoPulse(3, moving.servo_vertical, 500)
+    # # Set the servo positions
+    # moving.servo_horizontal = center_x
+    # moving.servo_vertical = center_y
+    # Board.setBusServoPulse(6, moving.servo_horizontal, 500)
+    # Board.setBusServoPulse(3, moving.servo_vertical, 500)
 
     # Fire and reset
+    moving.move_to_target()
+    time.sleep(2)
     moving.fire()
     moving.full_reset()
