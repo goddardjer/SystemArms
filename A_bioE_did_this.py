@@ -90,7 +90,7 @@ class Interpreter:
 class Moving:
     def __init__(self):
         self.servo_horizontal = 500  # Initial position for horizontal servo
-        self.servo_vertical = 100    # Initial position for vertical servo
+        self.servo_vertical = 200    # Initial position for vertical servo
 
     def open_hand(self):
         Board.setBusServoPulse(1, 500 - 450, 500)
