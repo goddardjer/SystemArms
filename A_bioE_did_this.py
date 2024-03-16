@@ -116,6 +116,11 @@ if __name__ == '__main__':
     interpreter = Interpreter()
     moving = Moving()
 
-    run_interpreter_and_move(interpreter, moving, circledetect)
+    # Start a new thread for the interpreter and moving
+    interpreter_and_moving_thread = threading.Thread(target=run_interpreter_and_move, args=(interpreter, moving, circledetect))
+    interpreter_and_moving_thread.start()
 
+    # Wait for the interpreter and moving thread to finish
+    interpreter_and_moving_thread.join()
+    
     print("Done")
