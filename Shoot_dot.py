@@ -150,17 +150,15 @@ class Moving:
 
 
 if __name__ == '__main__':
-     # Create an instance of the Interpreter class and run it
-    circledetect=CircleDetector()
+    circledetect = CircleDetector()
     interpreter = Interpreter()
-    moving=Moving()
+    moving = Moving()
 
     moving.initMove()
     time.sleep(3)
-    moving.move_to_target(interpreter.run(circledetect.run()))
+    center_x, center_y = circledetect.run() 
+    moving.move_to_target(*interpreter.run(center_x, center_y))
     time.sleep(2)
     moving.fire()
     time.sleep(2)
     moving.full_reset()
-    
-    print("Done")
