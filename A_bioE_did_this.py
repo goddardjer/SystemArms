@@ -73,7 +73,7 @@ class Interpreter:
 
     def interpolate_servoH(self, CV_H):
         CV_H_values = [-8, 0, 8]
-        Servo_H_values = [540, 500, 450]  
+        Servo_H_values = [540, 500, 440]  
         return np.interp(CV_H, CV_H_values, Servo_H_values)
 
     def interpolate_servoV(self, CV_V):
@@ -91,6 +91,11 @@ class Moving:
     def __init__(self):
         self.servo_horizontal = 500  # Initial position for horizontal servo
         self.servo_vertical = 300    # Initial position for vertical servo
+
+    def initMove(self):
+        Board.setBusServoPulse(1, 500 - 50, 300)
+        Board.setBusServoPulse(2, 500, 500)
+        self.AK.setPitchRangeMoving((0, 8, 18), -90, -90, 1500)
 
     def open_hand(self):
         Board.setBusServoPulse(1, 500 - 450, 500)
@@ -119,6 +124,8 @@ if __name__ == '__main__':
     interpreter = Interpreter()
     moving = Moving()
     moving.close_hand()
+    moving.initMove()
+    time.sleep(1)
 
     run_interpreter_and_move(interpreter, moving, circledetect)
 
