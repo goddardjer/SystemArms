@@ -71,7 +71,6 @@ class CircleDetector:
 
 class Interpreter:
     def __init__(self):
-        self.circle_detector = CircleDetector()
         self.ServoH_rounded = 0
         self.ServoV_rounded = 0
 
@@ -85,9 +84,8 @@ class Interpreter:
         Servo_V_values = [100, 115, 130]
         return np.interp(CV_V, CV_V_values, Servo_V_values)
 
-    def run(self):
-        center_x, center_y = self.circle_detector.run()
-
+    def run(self,center_x,center_y):
+        
         ServoH = self.interpolate_servoH(center_x)
         ServoV = self.interpolate_servoV(center_y)
 
