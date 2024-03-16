@@ -153,8 +153,23 @@ class Moving:
 
 
 if __name__ == '__main__':
+    # Create an instance of the Interpreter class and run it
+    interpreter = Interpreter()
+    servo_horizontal, servo_vertical = interpreter.run()
+
+    # Create an instance of the Moving class
     moving = Moving()
+
+    # Initialize the movement
     moving.initMove()
     time.sleep(3)
-    moving.move_to_target()
 
+    # Set the servo positions
+    moving.servo_horizontal = servo_horizontal
+    moving.servo_vertical = servo_vertical
+    Board.setBusServoPulse(6, moving.servo_horizontal, 500)
+    Board.setBusServoPulse(3, moving.servo_vertical, 500)
+
+    # Fire and reset
+    moving.fire()
+    moving.full_reset()
