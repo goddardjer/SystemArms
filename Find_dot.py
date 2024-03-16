@@ -38,6 +38,9 @@ class CircleDetector:
                 cv2.putText(frame, f'x: {center_x:.2f}, y: {center_y:.2f}', (i[0], i[1] - 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 1)
 
     def run(self):
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        out = cv2.VideoWriter('output.avi', fourcc, 20.0, self.size)
+
         while True:
             img = self.camera.frame
             if img is not None:

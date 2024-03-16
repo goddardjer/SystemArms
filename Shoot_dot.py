@@ -93,7 +93,50 @@ class Interpreter:
         self.ServoV_rounded = round(ServoV / 5) * 5
         return self.ServoH_rounded, self.ServoV_rounded
     
+################################################################
+class FaceDetector:
+    def __init__(self):
+        self.camera = Camera.Camera()
+        self.camera.camera_open()
+        self.size = (640, 480)
+        self.center_x = None
+        self.center_y = None
+        self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
+    def process_frame(self, frame):
+        frame_resize = cv2.resize(frame, self.size, interpolation=cv2.INTER_NEAREST)
+        frame_gray = cv2.cvtColor(frame_resize, cv2.COLOR_BGR2GRAY)
+        return frame_gray
+
+    def draw_faces(self, frame, frame_gray):
+        faces = self.face_cascade.detectMultiScale(frame_gray, 1.3, 5)
+        for (x, y, w, h) in faces:
+            self.center_x, self.center_y = convertCoordinate(x + w // 2, y + h // 2, self.size)
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
+    def get_face_center(self):
+        return self.center_x, self.center_y
+
+    def run(self):
+        while True:
+            img = self.camera.frame
+            if img is not None:
+                frame = img.copy()
+                frame_gray = self.process_frame(frame)
+                self.draw_faces(frame, frame_gray)
+                cv2.imshow('Frame', frame)
+                key = cv2.waitKey(1)
+                if key == 27:  # ESC key to break
+                    break
+
+                if self.center_x is not None and self.center_y is not None:
+                    self.camera.camera_close()
+                    cv2.destroyAllWindows()
+                    return self.center_x, self.center_y
+
+        self.camera.camera_close()
+        cv2.destroyAllWindows()  
+################################################################
 class Moving:
     def __init__(self):
         self.AK = ArmIK()
