@@ -142,8 +142,8 @@ class Moving:
         return pulse_x, pulse_y
 
     def move_to_target(self,servo_horizontal, servo_vertical):
-        servo_horizontal = servo_horizontal
-        servo_vertical = servo_vertical
+        servo_horizontal = int(servo_horizontal)
+        servo_vertical = int(servo_vertical)
 
         Board.setBusServoPulse(6, servo_horizontal, 500)
         Board.setBusServoPulse(3, servo_vertical, 500)
