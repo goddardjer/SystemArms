@@ -1,4 +1,3 @@
-
 import sys
 sys.path.append('/home/pi/ArmPi/')
 import cv2
@@ -35,15 +34,14 @@ class CircleDetector:
         closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, np.ones((6, 6), np.uint8))
         circles = cv2.HoughCircles(closed, cv2.HOUGH_GRADIENT, dp=1, minDist=50, param1=70, param2=20, minRadius=15, maxRadius=400)
 
-
         if circles is not None:
             circles = np.uint16(np.around(circles))
             for i in circles[0, :]:
-                center_x, center_y = convertCoordinate(i[0], i[1], self.size)
+                self.center_x, self.center_y = convertCoordinate(i[0], i[1], self.size)
                 cv2.circle(frame, (i[0], i[1]), i[2], (0, 255, 0), 2)
                 cv2.circle(frame, (i[0], i[1]), 2, (0, 0, 255), 3)
                 cv2.putText(frame, self.target_color, (i[0], i[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 0), 1)
-                cv2.putText(frame, f'x: {center_x:.2f}, y: {center_y:.2f}', (i[0], i[1] - 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 1)
+                cv2.putText(frame, f'x: {self.center_x:.2f}, y: {self.center_y:.2f}', (i[0], i[1] - 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 1)
 
     def get_circle_center(self):
         return self.center_x, self.center_y
@@ -68,12 +66,12 @@ class CircleDetector:
 
         self.camera.camera_close()
         cv2.destroyAllWindows()
+
 ###########################################################
 
 class Interpreter:
     def __init__(self):
-        self.ServoH_rounded = 0
-        self.ServoV_rounded = 0
+        pass
 
     def interpolate_servoH(self, CV_H):
         CV_H_values = [-8, 0, 8]
@@ -85,96 +83,39 @@ class Interpreter:
         Servo_V_values = [100, 115, 130]
         return np.interp(CV_V, CV_V_values, Servo_V_values)
 
-    def run(self,center_x,center_y):
-        
+    def run(self, center_x, center_y):
         ServoH = self.interpolate_servoH(center_x)
         ServoV = self.interpolate_servoV(center_y)
-
-        self.ServoH_rounded = round(ServoH / 5) * 5
-        self.ServoV_rounded = round(ServoV / 5) * 5
-        return self.ServoH_rounded, self.ServoV_rounded
-    
-    def run_interpreter(interpreter, circledetect):
-        return interpreter.run(circledetect.run())
+        return ServoH, ServoV
 
 
 class Moving:
     def __init__(self):
-        self.AK = ArmIK()
-        self.x = 0
-        self.y = 8
-        self.z = 24
         self.servo_horizontal = 500  # Initial position for horizontal servo
         self.servo_vertical = 100    # Initial position for vertical servo
-
-    def initMove(self):
-        Board.setBusServoPulse(1, 500 - 50, 300)
-        Board.setBusServoPulse(2, 500, 500)
-        self.AK.setPitchRangeMoving((0, 8, 18), -90, -90, 1500)
 
     def open_hand(self):
         Board.setBusServoPulse(1, 500 - 450, 500)
         time.sleep(0.8)
 
-    def close_hand(self):
-        Board.setBusServoPulse(1, 550, 500)
-        time.sleep(1)
-
     def fire(self):
         self.open_hand()
-        self.close_hand()
 
-    def full_reset(self):
-        self.AK.setPitchRangeMoving((2, 28, 18), -30, -30, 1500)
-        time.sleep(1)
-        self.AK.setPitchRangeMoving((2, 28, 0), -20, -20, 1500)
-        time.sleep(1)
-
-    def move_horozontal(self, increment):
-        self.servo_horizontal += increment
-        Board.setBusServoPulse(6, self.servo_horizontal, 500)
-        print(f"Horizontal pulse: {self.servo_horizontal}")
-
-    def move_vertical(self, increment):
-        self.servo_vertical += increment
-        Board.setBusServoPulse(3, self.servo_vertical, 500)
-        print(f"Vertical pulse: {self.servo_vertical}")
-
-    def calculate_pulse(self, x, y):
-        pulse_x = int(500 - (x / 0.29))
-        pulse_y = int(500 - (y / 0.29))
-        return pulse_x, pulse_y
-
-    def move_to_target(self,servo_horizontal, servo_vertical):
-        servo_horizontal = servo_horizontal
-        servo_vertical = servo_vertical
-
+    def move_to_target(self, servo_horizontal, servo_vertical):
         Board.setBusServoPulse(6, servo_horizontal, 500)
         Board.setBusServoPulse(3, servo_vertical, 500)
 
-
-def run_interpreter(interpreter, circledetect):
-    return interpreter.run(*circledetect.run())
+def run_interpreter_and_move(interpreter, moving, circledetect):
+    center_x, center_y = circledetect.run()
+    servoH, servoV = interpreter.run(center_x, center_y)
+    moving.move_to_target(servoH, servoV)
+    moving.fire()
 
 if __name__ == '__main__':
     circledetect = CircleDetector()
     interpreter = Interpreter()
     moving = Moving()
 
-    interpreter_thread = threading.Thread(target=run_interpreter, args=(interpreter, circledetect))
-    interpreter_thread.start()
+    run_interpreter_and_move(interpreter, moving, circledetect)
 
-    moving.initMove()
-    time.sleep(3)
-
-    interpreter_thread.join()
-    if hasattr(interpreter_thread, 'result'):
-        target = interpreter_thread.result
-
-        moving.move_to_target(*target)
-        time.sleep(2)
-        moving.fire()
-        time.sleep(2)
-        moving.full_reset()
-    
     print("Done")
