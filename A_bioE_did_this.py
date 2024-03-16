@@ -108,7 +108,7 @@ class Moving:
 def run_interpreter_and_move(interpreter, moving, circledetect):
     center_x, center_y = circledetect.run()
     servoH, servoV = interpreter.run(center_x, center_y)
-    moving.move_to_target(servoH, servoV)
+    moving.move_to_target(int(servoH), int(servoV))
     moving.fire()
 
 if __name__ == '__main__':
