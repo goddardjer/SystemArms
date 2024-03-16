@@ -75,6 +75,7 @@ class Moving:
     def open_hand(self):
         Board.setBusServoPulse(1, 500 - 450, 500)
         time.sleep(0.8)
+        
 
     def close_hand(self):
         Board.setBusServoPulse(1, 550, 500)
