@@ -48,24 +48,23 @@ class CircleDetector:
 
 
     def run(self):
-        while True:
-            img = self.camera.frame
-            if img is not None:
-                frame = img.copy()
-                frame_lab = self.process_frame(frame)
-                self.draw_circles(frame, frame_lab)
-                cv2.imshow('Frame', frame)
-                key = cv2.waitKey(1)
-                if key == 27:  # ESC key to break
-                    break
+        try:
+            while True:
+                img = self.camera.frame
+                if img is not None:
+                    frame = img.copy()
+                    frame_lab = self.process_frame(frame)
+                    self.draw_circles(frame, frame_lab)
+                    cv2.imshow('Frame', frame)
+                    key = cv2.waitKey(1)
+                    if key == 27:  # ESC key to break
+                        break
 
-                if self.center_x is not None and self.center_y is not None:
-                    self.camera.camera_close()
-                    cv2.destroyAllWindows()
-                    return self.center_x, self.center_y
-
-        self.camera.camera_close()
-        cv2.destroyAllWindows()
+                    if self.center_x is not None and self.center_y is not None:
+                        return self.center_x, self.center_y
+        finally:
+            self.camera.camera_close()
+            cv2.destroyAllWindows()
 
 ###########################################################
 
