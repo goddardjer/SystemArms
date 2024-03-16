@@ -76,12 +76,12 @@ class Interpreter:
 
     def interpolate_servoH(self, CV_H):
         CV_H_values = [-8, 0, 8]
-        Servo_H_values = [530, 500, 430]
+        Servo_H_values = [520, 490, 430]
         return np.interp(CV_H, CV_H_values, Servo_H_values)
 
     def interpolate_servoV(self, CV_V):
         CV_V_values = [16.5, 20.25, 24]
-        Servo_V_values = [100, 115, 130]
+        Servo_V_values = [100, 120, 135]
         return np.interp(CV_V, CV_V_values, Servo_V_values)
 
     def run(self,center_x,center_y):
