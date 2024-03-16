@@ -76,7 +76,7 @@ class Interpreter:
 
     def interpolate_servoH(self, CV_H):
         CV_H_values = [-8, 0, 8]
-        Servo_H_values = [540, 500, 450]
+        Servo_H_values = [530, 500, 430]
         return np.interp(CV_H, CV_H_values, Servo_H_values)
 
     def interpolate_servoV(self, CV_V):
@@ -104,7 +104,7 @@ class Moving:
         self.servo_vertical = 100    # Initial position for vertical servo
 
     def initMove(self):
-        Board.setBusServoPulse(1, 500 - 50, 300)
+        Board.setBusServoPulse(1, 500, 500)
         Board.setBusServoPulse(2, 500, 500)
         self.AK.setPitchRangeMoving((0, 8, 18), -90, -90, 1500)
 
@@ -150,15 +150,17 @@ class Moving:
 
 
 if __name__ == '__main__':
-    circledetect = CircleDetector()
-    interpreter = Interpreter()
-    moving = Moving()
+    while True:
+        input("Press space when reloaded")  # Wait for keypress
+        circledetect = CircleDetector()
+        interpreter = Interpreter()
+        moving = Moving()
 
-    moving.initMove()
-    time.sleep(3)
-    center_x, center_y = circledetect.run() 
-    moving.move_to_target(*interpreter.run(center_x, center_y))
-    time.sleep(2)
-    moving.fire()
-    time.sleep(2)
-    moving.full_reset()
+        moving.initMove()
+        time.sleep(3)
+        center_x, center_y = circledetect.run() 
+        moving.move_to_target(*interpreter.run(center_x, center_y))
+        time.sleep(2)
+        moving.fire()
+        time.sleep(2)
+        moving.full_reset()
