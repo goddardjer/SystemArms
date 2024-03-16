@@ -113,7 +113,7 @@ def run_interpreter_and_move(interpreter, moving, circledetect):
     servoH, servoV = interpreter.run(center_x, center_y)
     moving.move_to_target(int(servoH), int(servoV))
     moving.fire()
-    
+    moving.close_hand()
 
 if __name__ == '__main__':
     circledetect = CircleDetector()
