@@ -9,6 +9,7 @@ from ArmIK.ArmMoveIK import *
 import HiwonderSDK.Board as Board
 from CameraCalibration.CalibrationConfig import *
 import numpy as np
+import time
 
 ##########################################################
 
@@ -142,37 +143,26 @@ class Moving:
         pulse_y = int(500 - (y / 0.29))
         return pulse_x, pulse_y
 
-    def move_to_target(self):
-        interpreter = Interpreter()
-        servo_horizontal, servo_vertical = interpreter.run()
+    def move_to_target(self,servo_horizontal, servo_vertical):
+        servo_horizontal = servo_horizontal
+        servo_vertical = servo_vertical
 
-        self.servo_horizontal = servo_horizontal
-        self.servo_vertical = servo_vertical
-
-        Board.setBusServoPulse(6, self.servo_horizontal, 500)
-        Board.setBusServoPulse(3, self.servo_vertical, 500)
+        Board.setBusServoPulse(6, servo_horizontal, 500)
+        Board.setBusServoPulse(3, servo_vertical, 500)
 
 
 if __name__ == '__main__':
      # Create an instance of the Interpreter class and run it
+    circledetect=CircleDetector()
     interpreter = Interpreter()
-    center_x, center_y = interpreter.run()
+    moving=Moving()
 
-    # Create an instance of the Moving class
-    moving = Moving()
-
-    # Initialize the movement
     moving.initMove()
     time.sleep(3)
-
-    # # Set the servo positions
-    # moving.servo_horizontal = center_x
-    # moving.servo_vertical = center_y
-    # Board.setBusServoPulse(6, moving.servo_horizontal, 500)
-    # Board.setBusServoPulse(3, moving.servo_vertical, 500)
-
-    # Fire and reset
-    moving.move_to_target()
+    moving.move_to_target(interpreter.run(circledetect.run()))
     time.sleep(2)
     moving.fire()
+    time.sleep(2)
     moving.full_reset()
+    
+    print("Done")
