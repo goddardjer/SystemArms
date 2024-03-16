@@ -38,11 +38,11 @@ class CircleDetector:
         if circles is not None:
             circles = np.uint16(np.around(circles))
             for i in circles[0, :]:
-                center_x, center_y = convertCoordinate(i[0], i[1], self.size)
+                self.center_x, self.center_y = convertCoordinate(i[0], i[1], self.size)
                 cv2.circle(frame, (i[0], i[1]), i[2], (0, 255, 0), 2)
                 cv2.circle(frame, (i[0], i[1]), 2, (0, 0, 255), 3)
                 cv2.putText(frame, self.target_color, (i[0], i[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 0), 1)
-                cv2.putText(frame, f'x: {center_x:.2f}, y: {center_y:.2f}', (i[0], i[1] - 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 1)
+                cv2.putText(frame, f'x: {self.center_x:.2f}, y: {self.center_y:.2f}', (i[0], i[1] - 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 1)
 
     def get_circle_center(self):
         return self.center_x, self.center_y

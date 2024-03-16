@@ -124,7 +124,6 @@ if __name__ == '__main__':
     interpreter = Interpreter()
     moving = Moving()
     moving.close_hand()
-    moving.initMove()
     time.sleep(1)
 
     run_interpreter_and_move(interpreter, moving, circledetect)
