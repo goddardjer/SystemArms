@@ -47,8 +47,7 @@ class CircleDetector:
         return self.center_x, self.center_y
 
 
-def run(self):
-    try:
+    def run(self):
         while True:
             img = self.camera.frame
             if img is not None:
@@ -61,8 +60,10 @@ def run(self):
                     break
 
                 if self.center_x is not None and self.center_y is not None:
+                    self.camera.camera_close()
+                    cv2.destroyAllWindows()
                     return self.center_x, self.center_y
-    finally:
+
         self.camera.camera_close()
         cv2.destroyAllWindows()
 
