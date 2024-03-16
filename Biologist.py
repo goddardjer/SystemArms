@@ -1,11 +1,14 @@
 import sys
+sys.path.append('/home/pi/ArmPi/')
 import cv2
-import numpy as np
-import time  # Add import statement for the time module
-from Camera import Camera  # Assuming Camera is a module in the same directory
-from LABConfig import color_range  # Assuming color_range is defined in LABConfig
-from ArmIK.ArmMoveIK import ArmIK  # Assuming ArmIK is a module in the ArmIK directory
+import Camera
+from LABConfig import *
+from ArmIK.Transform import *
+from ArmIK.ArmMoveIK import *
 import HiwonderSDK.Board as Board
+from CameraCalibration.CalibrationConfig import *
+import numpy as np
+import time
 
 class CircleDetector:
     def __init__(self):
